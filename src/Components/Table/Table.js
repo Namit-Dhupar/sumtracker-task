@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -37,19 +37,22 @@ export default function CustomizedTables({
   const [data, setData] = useState([]);
   const resource = "/products/";
 
-  const getTableData = async (id) => {
-    const res = id
-      ? await getApiData(resource + `?contact=${id}`)
-      : await getApiData(resource);
-    if (res) {
-      setData(res.data);
-      setProductData(res.data);
-    }
-  };
+  const getTableData = useCallback(
+    async (id) => {
+      const res = id
+        ? await getApiData(resource + `?contact=${id}`)
+        : await getApiData(resource);
+      if (res) {
+        setData(res.data);
+        setProductData(res.data);
+      }
+    },
+    [setProductData]
+  );
 
   useEffect(() => {
     getTableData(contactId);
-  }, [contactId]);
+  }, [contactId, getTableData]);
 
   useEffect(() => {
     setData(productData);

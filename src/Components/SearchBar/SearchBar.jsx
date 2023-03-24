@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./SearchBar.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { getApiData } from "../../Utils/commonFetch";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
 
-function SearchBar({ placeholder }) {
+function SearchBar({ placeholder, deleteInput }) {
   const [data, setData] = useState([]);
   const [searchedWord, setSearchedWord] = useState("");
   const [loader, setLoader] = useState(false);
@@ -56,6 +56,10 @@ function SearchBar({ placeholder }) {
     //Remove the dropdown on select
     setData([]);
   };
+
+  useEffect(() => {
+    if (deleteInput) setSearchedWord("");
+  }, [deleteInput]);
 
   return (
     <div className="search">

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import "./App.css";
 import SearchBar from "./Components/SearchBar/SearchBar";
 import Grid from "@mui/material/Unstable_Grid2";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import SupplierChip from "./Components/SupplierChip/SupplierChip";
 import Table from "./Components/Table/Table";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -15,6 +17,7 @@ function App() {
   const [loader, setLoader] = useState(false);
   const [searchParam] = useSearchParams();
   const id = searchParam.get("contact");
+  const supplierDelete = useRef(false);
 
   const handlePagination = async (resource) => {
     setLoader(true);
@@ -25,46 +28,70 @@ function App() {
     }
   };
 
+  const handleChipDelete = useCallback((val) => {
+    supplierDelete.current = val;
+  }, []);
+
   return (
-    <Grid container spacing={1} className="App">
-      <Grid xs={12}>
-        <h1>SumTracker Product List</h1>
-      </Grid>
-      <Grid xs={12}>
-        <SearchBar placeholder="Search By Name/SKU" />
-      </Grid>
-      <Grid xs={4}>Showing {productData.results?.length} products</Grid>
-      <Grid xs={4}>{id && <SupplierChip contactId={id} />}</Grid>
-      {loader ? (
-        <Grid xs={4}>
-          <CircularProgress />
+    <Box className="App" style={{ padding: "50px 60px" }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <h1>SumTracker Product List</h1>
         </Grid>
-      ) : (
-        <>
-          <Grid xs={2}>
-            {productData.previous && (
-              <ArrowBackIosNewIcon
-                onClick={() => handlePagination(productData.previous)}
-              />
-            )}
-          </Grid>
-          <Grid xs={2}>
-            {productData.next && (
-              <ArrowForwardIosIcon
-                onClick={() => handlePagination(productData.next)}
-              />
-            )}
-          </Grid>
-        </>
-      )}
-      <Grid xs={12}>
-        <Table
-          setProductData={setProductData}
-          productData={productData}
-          contactId={id}
-        />
+        <Grid>
+          <SearchBar
+            deleteInput={supplierDelete.current}
+            placeholder="Search By Name/SKU"
+          />
+        </Grid>
       </Grid>
-    </Grid>
+      <Grid container spacing={2}>
+        <Grid xs={4}>
+          Showing {productData.results?.length} of {productData.count} products
+        </Grid>
+        <Grid xs={4}>
+          {id && (
+            <SupplierChip handleChipDelete={handleChipDelete} contactId={id} />
+          )}
+        </Grid>
+        {loader ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Grid xs={2}>
+              {productData.previous && (
+                <Button
+                  variant="contained"
+                  onClick={() => handlePagination(productData.previous)}
+                  startIcon={<ArrowBackIosNewIcon />}
+                >
+                  Prev
+                </Button>
+              )}
+            </Grid>
+            <Grid xs={2}>
+              {productData.next && (
+                <Button
+                  variant="contained"
+                  onClick={() => handlePagination(productData.next)}
+                  endIcon={<ArrowForwardIosIcon />}
+                >
+                  Next
+                </Button>
+              )}
+            </Grid>
+          </>
+        )}
+        <Grid item xs={12}>
+          <Table
+            handleChipDelete={handleChipDelete}
+            setProductData={setProductData}
+            productData={productData}
+            contactId={id}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 

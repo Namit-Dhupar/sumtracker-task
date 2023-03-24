@@ -33,24 +33,32 @@ export default function CustomizedTables({
   contactId,
   setProductData,
   productData,
+  handleChipDelete,
 }) {
   const [data, setData] = useState([]);
+  const [message, setMessage] = useState("");
   const resource = "/products/";
 
   const getTableData = useCallback(
     async (id) => {
+      setMessage("Data Loading");
       const res = id
         ? await getApiData(resource + `?contact=${id}`)
         : await getApiData(resource);
       if (res) {
         setData(res.data);
         setProductData(res.data);
+        handleChipDelete(false);
+      }
+      if (res.data.results?.length === 0) {
+        setMessage("Data Not Available");
       }
     },
-    [setProductData]
+    [setProductData, handleChipDelete]
   );
 
   useEffect(() => {
+    setData([]);
     getTableData(contactId);
   }, [contactId, getTableData]);
 
@@ -79,9 +87,9 @@ export default function CustomizedTables({
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <img
-                    alt={row.image_url}
+                    alt={row.name}
                     id={"image" + row.id}
-                    src={row.image_url}
+                    src={row.image_url || "/no_image.jpg"}
                     height="90"
                     width="90"
                   />
@@ -94,7 +102,11 @@ export default function CustomizedTables({
               </StyledTableRow>
             ))}
           </TableBody>
-        ) : null}
+        ) : (
+          <>
+            <h1>{message}</h1>
+          </>
+        )}
       </Table>
     </TableContainer>
   );

@@ -39,6 +39,8 @@ export default function CustomizedTables({
   const [message, setMessage] = useState("");
   const resource = "/products/";
 
+  //UseCallback is used to store the function in the memory and will return same function instance
+  //during each rerender, unless the objects in the dependancy arrays are changed
   const getTableData = useCallback(
     async (id) => {
       setMessage("Data Loading");
@@ -57,11 +59,13 @@ export default function CustomizedTables({
     [setProductData, handleChipDelete]
   );
 
+  //triggers render when contact id is changed
   useEffect(() => {
     setData([]);
     getTableData(contactId);
   }, [contactId, getTableData]);
 
+  //Triggered render on pagination
   useEffect(() => {
     setData(productData);
   }, [productData]);

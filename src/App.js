@@ -16,6 +16,7 @@ function App() {
   const [productData, setProductData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [searchParam] = useSearchParams();
+  //fetches id from list?contact=14 that is 14 which is sent to table and chip component as per requirements
   const id = searchParam.get("contact");
   const supplierDelete = useRef(false);
 
@@ -28,6 +29,7 @@ function App() {
     }
   };
 
+  //This function is used to obtain child's prop(child to parent props passing)
   const handleChipDelete = useCallback((val) => {
     supplierDelete.current = val;
   }, []);

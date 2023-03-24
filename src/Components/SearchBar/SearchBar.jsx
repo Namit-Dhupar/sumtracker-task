@@ -21,6 +21,7 @@ function SearchBar({ placeholder, deleteInput }) {
     const res = await getApiData(resource);
     if (res) {
       setData(res.data?.results);
+      //Storing a copy of API result in a ref
       dataRef.current = res.data?.results;
       setLoader(false);
     }
@@ -58,11 +59,12 @@ function SearchBar({ placeholder, deleteInput }) {
   };
 
   useEffect(() => {
+    //in case the supplier chip is deleted, remove the company name from input box
     if (deleteInput) setSearchedWord("");
   }, [deleteInput]);
 
   return (
-    <div className="search">
+    <div className="search" onBlur={() => setData([])}>
       <div className="searchInputs">
         <input
           onClick={() => (!searchedWord.length ? handleClick() : null)}
@@ -77,10 +79,10 @@ function SearchBar({ placeholder, deleteInput }) {
       </div>
       {data.length > 0 && (
         <div className="dataResult">
-          {data.map((item) => {
+          {data.slice(0, 7).map((item) => {
             return (
               <div
-                onClick={() => handleSelect(item)}
+                onMouseDown={() => handleSelect(item)}
                 key={item.id}
                 className="dataItem"
               >
